@@ -47,7 +47,7 @@
       <!--内容主体区域-->
       <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="90px">
         <el-form-item label="角色号" prop="roleNum">
-          <el-input v-model="addForm.roleNum"></el-input>
+          <el-input v-model.number="addForm.roleNum"></el-input>
         </el-form-item>
         <el-form-item label="角色描述" prop="description">
           <el-input v-model="addForm.description"></el-input>
@@ -132,10 +132,10 @@ export default {
     confirm() {
       // console.log(this.addForm)
       // addRole(this.addForm)
-      this.$refs.addFormRef.validate(valid => {
+      this.$refs.addFormRef.validate(async valid => {
         
         if (!valid) return
-        addRole(this.addForm)
+        await addRole(this.addForm)
           // 请求成功
           .then((res) => {
             console.log(this.addForm)
