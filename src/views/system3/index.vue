@@ -11,11 +11,11 @@
             {{ scope.row.id }}
           </template>
         </el-table-column>
-        <!-- <el-table-column align="center" label="角色号">
+        <el-table-column align="center" label="角色号">
           <template slot-scope="scope">
             {{ scope.row.roleNum }}
           </template>
-        </el-table-column> -->
+        </el-table-column>
         <el-table-column align="center" label="描述">
           <template slot-scope="scope">
             {{ scope.row.description }}
