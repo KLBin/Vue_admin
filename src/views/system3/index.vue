@@ -16,11 +16,11 @@
             {{ scope.row.roleNum }}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="描述">
+        <!-- <el-table-column align="center" label="描述">
           <template slot-scope="scope">
             {{ scope.row.description }}
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column align="center" label="操作" width="200px">
           <template slot-scope="scope">
             <!-- 修改按钮 -->
