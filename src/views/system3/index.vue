@@ -56,7 +56,7 @@
       <!--内容主体区域-->
       <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="90px">
         <el-form-item label="角色号" prop="roleNum">
-          <el-input v-model.number="addForm.roleNum"></el-input>
+          <el-input v-model="addForm.roleNum"></el-input>
         </el-form-item>
         <el-form-item label="角色描述" prop="description">
           <el-input v-model="addForm.description"></el-input>
