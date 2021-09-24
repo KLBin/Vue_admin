@@ -2,10 +2,6 @@
   <div class="app-container">
     <!-- @click="handleAddRole" -->
     <el-button type="primary" @click="addDialogVisible = true" >新增角色</el-button>
-    <el-button type="primary" @click="addDialogVisible = true" >新增角色</el-button>
-    <el-button type="primary" @click="addDialogVisible = true" >新增角色</el-button>
-    <el-button type="primary" @click="addDialogVisible = true" >新增角色</el-button>
-    
     <el-card>
       <!-- 用户列表区域 -->
       <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
@@ -43,6 +39,7 @@
           </template>
         </el-table-column>
       </el-table>
+      
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
