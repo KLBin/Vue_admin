@@ -21,3 +21,18 @@ export function addRole(data) {
     data
   })
 }
+
+export function selectRole(id) {
+    return request({
+      url: `/api/v1/console/role/${id}`,
+      method: 'get',
+    })
+  }
+  
+  export function updateRole(data) {
+    return request({
+      url: '/api/v1/console/role/',
+      method: 'put',
+      data
+    })
+  }
