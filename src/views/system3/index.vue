@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- @click="handleAddRole" -->
-    <el-button type="primary" @click="addDialogVisible = true" >新增角色</el-button>
+    <!-- <el-button type="primary" @click="addDialogVisible = true" >新增角色</el-button> -->
     
     <el-card>
       <!-- 用户列表区域 -->
@@ -16,11 +16,11 @@
             {{ scope.row.roleNum }}
           </template>
         </el-table-column>
-        <!-- <el-table-column align="center" label="描述">
+        <el-table-column align="center" label="描述">
           <template slot-scope="scope">
             {{ scope.row.description }}
           </template>
-        </el-table-column> -->
+        </el-table-column>
         <el-table-column align="center" label="操作" width="200px">
           <template slot-scope="scope">
             <!-- 修改按钮 -->
