@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- @click="handleAddRole" -->
-    <!-- <el-button type="primary" @click="addDialogVisible = true" >新增角色</el-button> -->
+    <el-button type="primary" @click="addDialogVisible = true" >新增角色</el-button>
     
     <el-card>
       <!-- 用户列表区域 -->
@@ -11,11 +11,11 @@
             {{ scope.row.id }}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="角色号">
+        <!-- <el-table-column align="center" label="角色号">
           <template slot-scope="scope">
             {{ scope.row.roleNum }}
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column align="center" label="描述">
           <template slot-scope="scope">
             {{ scope.row.description }}
@@ -28,7 +28,7 @@
               type="primary"
               icon="el-icon-edit"
               size="mini"
-              @click="showEditDialog(scope)"
+              @click="showEditDialog(scope.row.id)"
             ></el-button>
             <!-- 删除按钮 -->
             <el-button
@@ -47,7 +47,7 @@
       <!--内容主体区域-->
       <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="90px">
         <el-form-item label="角色号" prop="roleNum">
-          <el-input v-model="addForm.roleNum"></el-input>
+          <el-input v-model.number="addForm.roleNum"></el-input>
         </el-form-item>
         <el-form-item label="角色描述" prop="description">
           <el-input v-model="addForm.description"></el-input>
@@ -59,36 +59,11 @@
         <el-button type="primary" @click="confirm">确 定</el-button>
       </span>
     </el-dialog>
-
-    <!--编辑用户角色的对话框-->
-    <el-dialog title="修改角色信息"
-      :visible.sync="editDialogVisible"
-      width="50%"
-      @close="editDialogClosed"
-      >
-      <!--内容主体区域-->
-      <el-form :model="editForm" :rules="addFormRules" ref="editFormRef" label-width="90px">
-        <el-form-item label="角色id" prop="id" style="display: none;"> 
-          <el-input v-model="editForm.id"></el-input>
-        </el-form-item>
-        <el-form-item label="角色号" prop="roleNum">
-          <el-input v-model="editForm.roleNum"></el-input>
-        </el-form-item>
-        <el-form-item label="角色描述" prop="description">
-          <el-input v-model="editForm.description"></el-input>
-        </el-form-item>
-      </el-form>
-      <!--底部按钮区域-->
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editRoleInfo">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRoles, deleteRole, addRole, selectRole, updateRole } from "@/api/role";
+import { getRoles, deleteRole, addRole } from "@/api/role";
 
 export default {
   data() {
@@ -96,15 +71,8 @@ export default {
       //获取用户列表的参数对象
       rolesList:[],
       addDialogVisible: false, // 控制添加角色对话框是否显示
-      editDialogVisible: false, // 控制修改角色信息对话框是否显示
       // 添加角色的表单数据
       addForm: {
-        roleNum: '',
-        description: ''
-      },
-      // 修改角色信息的表单数据
-      editForm: {
-        id:'',
         roleNum: '',
         description: ''
       },
@@ -182,60 +150,6 @@ export default {
         // this.$message.success('添加角色成功')
         // 隐藏添加角色的对话框
         this.addDialogVisible = false
-        // 重新发起请求角色列表
-        this.getRolesList()
-      })
-    },
-    // 监听 修改角色状态
-    showEditDialog({ row }) {
-      console.log(row.id)
-      this.editDialogVisible = true
-
-      selectRole(row.id)
-        .then((res) => {
-          this.editForm.id = res.data.data.id
-          this.editForm.roleNum = res.data.data.roleNum
-          this.editForm.description = res.data.data.description
-
-        })
-        .catch((err) => {
-          this.$message.error('查询角色信息失败')
-        })
-    },
-      
-      // const { data: res } = await this.$http.get('roles/' + id)
-      // if (res.meta.status !== 200) {
-      //   return this.$message.error('查询角色信息失败')
-      // }
-      
-    // 监听 修改角色信息对话框的关闭事件
-    editDialogClosed() {
-      // 表单内容重置为空
-      this.$refs.editFormRef.resetFields() // 通过ref引用调用resetFields方法
-    },
-    // 点击按钮 修改角色信息
-    editRoleInfo() {
-      this.$refs.editFormRef.validate(async valid => {
-        // console.log(valid)
-        let b = await updateRole(this.editForm)
-        console.log(b)
-        if (!valid) return
-        // 可以发起修改用户信息的网络请求
-        // const { data: res } = await this.$http.put(
-        //   'roles/' + this.editForm.roleId,
-        //   this.editForm
-        // )
-        await updateRole(this.editForm)
-        .then((res) => {
-            console.log(this.addForm)
-            this.$message.success('修改角色信息成功！')
-          })
-          // 请求失败
-          .catch((err) => {
-            console.log(err)
-          });
-        // 关闭对话框
-        this.editDialogVisible = false
         // 重新发起请求角色列表
         this.getRolesList()
       })
