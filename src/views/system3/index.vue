@@ -1,6 +1,5 @@
 <template>
   <div class="app-container">
-    <!-- @click="handleAddRole" -->
     <el-button type="primary" @click="addDialogVisible = true" >新增角色</el-button>
     <el-card>
       <!-- 用户列表区域 -->
@@ -34,6 +33,7 @@
               type="dangere"
               icon="el-icon-delete"
               size="mini"
+              :disabled="scope.row.id == '3b097f55e4a84d0bbeb114b69ff7c6e4'"
               @click="handleDelete(scope)"
             ></el-button>
           </template>
@@ -51,9 +51,8 @@
       </el-pagination>
     </el-card>
 
-    <!--添加角色的对话框-->
     <el-dialog title="添加角色" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
-      <!--内容主体区域-->
+    <!--添加角色的对话框-->
       <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="90px">
         <el-form-item label="角色号" prop="roleNum">
           <el-input v-model="addForm.roleNum"></el-input>
@@ -68,13 +67,13 @@
         <el-button type="primary" @click="confirm">确 定</el-button>
       </span>
     </el-dialog>
+    
+    <el-dialog 
+      title="修改角色信息"
+      :visible.sync="editDialogVisible"
+      width="50%"
+      @close="editDialogClosed">
     <!--编辑用户角色的对话框-->
-    <el-dialog title="修改角色信息"
-    :visible.sync="editDialogVisible"
-    width="50%"
-    @close="editDialogClosed"
-    >
-    <!--内容主体区域-->
     <el-form :model="editForm" :rules="addFormRules" ref="editFormRef" label-width="90px">
       <el-form-item label="角色id" prop="id" style="display: none;"> 
         <el-input v-model="editForm.id"></el-input>
