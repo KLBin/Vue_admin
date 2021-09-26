@@ -1,11 +1,13 @@
 import request from '@/utils/request'
 
-export function getRoles() {
+export function getRoles(params) {
   return request({
-    url: '/api/v1/console/role/',
-    method: 'get'
+    url: '/api/v1/console/role/page',
+    method: 'get',
+    params
   })
 }
+
 
 export function deleteRole(id) {
   return request({
@@ -29,10 +31,10 @@ export function selectRole(id) {
     })
   }
   
-  export function updateRole(data) {
-    return request({
-      url: '/api/v1/console/role/',
-      method: 'put',
-      data
-    })
-  }
+export function updateRole(data) {
+  return request({
+    url: '/api/v1/console/role/',
+    method: 'put',
+    data
+  })
+}
