@@ -1,8 +1,12 @@
 <template>
   <div class="app-container">
     <!-- @click="handleAddRole" -->
-    <el-button type="primary" @click="addDialogVisible = true">新增角色</el-button>
-    <el-card style="margin-top: 30px;">
+    <el-button type="primary" @click="addDialogVisible = true" >新增角色</el-button>
+    <el-form ref="selectForm" :model="selectForm" label-width="80px" style="">
+        <el-input v-model="selectForm.roleNum" style="width:40%;margin-left:30%;"></el-input>
+        <el-button type="primary" @click="selectDialog(selectForm.roleNum)">查询</el-button>
+    </el-form>
+    <el-card>
       <!-- 用户列表区域 -->
       <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
         <el-table-column align="center" label="角色id">
@@ -109,7 +113,6 @@
         show-checkbox
         @check-change="handleCheckChange">
       </el-tree>
-      </el-form-item>
     </el-form>
     <!--底部按钮区域-->
     <span slot="footer" class="dialog-footer">
@@ -180,6 +183,9 @@ export default {
           children: 'zones',
           isLeaf: 'leaf'
       },
+      selectForm: {
+        roleNum: ''
+      },
       count: 1,
       // 添加用户表单的验证规则对象
       addFormRules: {
@@ -200,6 +206,7 @@ export default {
     }
   },
   mounted() {
+    // this.selectDialog();
     this.getRolesList();
     // this.fetchData();
   },
@@ -250,6 +257,20 @@ export default {
         })
         .catch(err => { console.error(err) })
     },
+    selectDialog(a){
+      
+        selectRole(a)
+          // 请求成功
+          .then((res) => {
+            this.rolesList = Object.values(res.data).splice(2)
+            console.log(res.data.data) 
+            this.$message.success('查询角色成功')
+          })
+          // 请求失败
+          .catch((err) => {
+            console.log(err)
+          });
+    },
     // 监听 添加用户对话框的关闭事件
     addDialogClosed() {
     // 表单内容重置为空
@@ -259,7 +280,7 @@ export default {
     confirm() {
       this.$refs.addFormRef.validate(async valid => {
         
-        if (!valid) return
+        if (!valid) return  
         await addRole(this.addForm)
           // 请求成功
           .then((res) => {
