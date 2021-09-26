@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <!-- @click="handleAddRole" -->
-    <el-button type="primary" @click="addDialogVisible = true" >新增角色</el-button>
-    <el-card>
+    <el-button type="primary" @click="addDialogVisible = true">新增角色</el-button>
+    <el-card style="margin-top: 30px;">
       <!-- 用户列表区域 -->
       <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
         <el-table-column align="center" label="角色id">
@@ -29,6 +29,13 @@
               size="mini"
               @click="showEditDialog(scope)"
             ></el-button>
+            <!-- 权限按钮 -->
+            <el-button
+              type="dangere"
+              icon="el-icon-plus"
+              size="mini"
+              @click="powerDialog"
+            ></el-button>
             <!-- 删除按钮 -->
             <el-button
               type="dangere"
@@ -39,8 +46,6 @@
           </template>
         </el-table-column>
       </el-table>
-      
-      <!-- 分页区域 -->
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -93,8 +98,27 @@
       <el-button type="primary" @click="editRoleInfo">确 定</el-button>
     </span>
     </el-dialog>
-    <!--权限树-->
-    <!-- <el-form-item label="权限">
+    <!--添加权限对话框-->
+    <el-dialog title="权限" :visible.sync="powerDialogVisible" width="50%" @close="powerClosed">
+    <!--内容主体区域-->
+    <el-form ref="powerFormRef" label-width="90px">
+      <el-tree
+        :props="props"
+        :load="loadNode"
+        lazy
+        show-checkbox
+        @check-change="handleCheckChange">
+      </el-tree>
+      </el-form-item>
+    </el-form>
+    <!--底部按钮区域-->
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="powerDialogVisible = false">取 消</el-button>
+      <el-button type="primary">确 定</el-button>
+    </span>
+  </el-dialog>
+    <!-- 权限树
+    <el-form-item label="权限">
       <el-tree
         ref="tree"
         :check-strictly="checkStrictly"
@@ -130,6 +154,7 @@ export default {
 
       addDialogVisible: false, // 控制添加角色对话框是否显示
       editDialogVisible: false, // 控制修改角色信息对话框是否显示
+      powerDialogVisible: false, // 控制权限对话框是否显示
       // 添加角色的表单数据
       addForm: {
         roleNum: '',
@@ -141,15 +166,21 @@ export default {
         roleNum: '',
         description: ''
       },
-      // 权限树的数据
-      form: {},
-      permissionIds: [],
-      routes: [],
-      checkStrictly: false,
-      defaultProps: {
-        children: 'children',
-        label: 'name'
+      // // 权限树的数据
+      // form: {},
+      // permissionIds: [],
+      // routes: [],
+      // checkStrictly: false,
+      // defaultProps: {
+      //   children: 'children',
+      //   label: 'name'
+      // },
+      props: {
+          label: 'name',
+          children: 'zones',
+          isLeaf: 'leaf'
       },
+      count: 1,
       // 添加用户表单的验证规则对象
       addFormRules: {
         roleNum: [
@@ -287,19 +318,94 @@ export default {
         this.getRolesList()
       })
     },
-    // fetchData () {
-    //   this.listLoading = true
-    //   menuRoleList().then(response => {
-    //     this.listLoading = false
-    //     // this.routes = response.data
-    //     this.routes = this.buildMenus(response.data)
-    //   })
-    // },
+    // 监听 修改角色信息对话框的关闭事件
+    powerClosed() {
+      // 表单内容重置为空
+      this.$refs.powerFormRef.resetFields() // 通过ref引用调用resetFields方法
+    },
+    //树状图
+    handleCheckChange(data, checked, indeterminate) {
+        console.log(data, checked, indeterminate);
+      },
+      handleNodeClick(data) {
+        console.log(data);
+      },
+      loadNode(node, resolve) {
+        if (node.level === 0) {
+          return resolve([{ name: 'region1' }, { name: 'region2' }]);
+        }
+        if (node.level > 1) return resolve([]);
+
+        var hasChild;
+        if (node.data.name === 'region1') {
+          hasChild = true;
+        } else if (node.data.name === 'region2') {
+          hasChild = false;
+        } else {
+          hasChild = Math.random() > 0.5;
+        }
+
+        setTimeout(() => {
+          var data;
+          if (hasChild) {
+            data = [{
+              name: 'zone' + this.count++,
+              leaf: true
+            }, {
+              name: 'zone' + this.count++,
+              leaf: true
+            }];
+          } else {
+            data = [];
+          }
+
+          resolve(data);
+        }, 500);
+      },
+      powerDialog(){
+        this.powerDialogVisible = true
+      }
+  //   fetchData () {
+  //     this.listLoading = true
+  //     menuRoleList().then(response => {
+  //       this.listLoading = false
+  //       // this.routes = response.data
+  //       this.routes = this.buildMenus(response.data)
+  //     })
+  //   },
+  //   /**
+  //  * 构建目录层级结构
+  //  */
+  //  buildMenus (menus) {
+  //     const disabled = false
+  //     console.log(menus);
+  //     // filter() 方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素。
+  //     const ms = menus.filter(m => m.parentId == -1)
+  //     this.filterChildMenu(menus, ms, disabled)
+  //     return ms
+  //   },
+  //   filterChildMenu (menus, ms, disabled) {
+  //     if (ms) {
+  //       ms.forEach(e => {
+  //         const childs = menus.filter(m => m.parentId == e.id && m.parentId != m.id && m.parentId != -1) // 不是第一级也不是自身
+  //         e.children = childs
+  //         this.filterChildMenu(menus, childs, disabled)
+  //       })
+  //     }
+  //   },
+  //   getCheckedKeys () {
+  //     // console.log(this.$refs.tree.getCheckedKeys())
+  //     this.permissionIds = this.$refs.tree.getCheckedKeys()
+  //   },
+  
   }
 }
 </script>
 
 <style scoped>
+.app-container{
+  padding: 20px;
+}
 .el-card{
     box-shadow: 0 1px 1px rgba(0,0,0,0.15)  !important;
 }
