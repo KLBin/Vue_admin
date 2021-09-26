@@ -40,14 +40,15 @@
         </el-table-column>
       </el-table>
       
+      <!-- 分页区域 -->
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currentPage4"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
+        :current-page="queryInfo.pageNo"
+        :page-sizes="[2, 5, 10, 20]"
+        :page-size="queryInfo.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400">
+        :total="total">
       </el-pagination>
     </el-card>
 
@@ -92,7 +93,7 @@
     </span>
     </el-dialog>
     <!--权限树-->
-    <el-form-item label="权限">
+    <!-- <el-form-item label="权限">
       <el-tree
         ref="tree"
         :check-strictly="checkStrictly"
@@ -105,7 +106,7 @@
         @check="getCheckedKeys"
         class="permission-tree"
       />
-    </el-form-item>
+    </el-form-item> -->
   </div>
 </template>
 
@@ -117,6 +118,15 @@ export default {
     return {
       //获取用户列表的参数对象
       rolesList:[],
+      queryInfo: {
+        query: '',
+        //当前的页数
+        pageNo: 1,
+        //当前每页显示多少条数据
+        pageSize: 2,
+      },
+      total: 0,
+
       addDialogVisible: false, // 控制添加角色对话框是否显示
       editDialogVisible: false, // 控制修改角色信息对话框是否显示
       // 添加角色的表单数据
@@ -159,16 +169,33 @@ export default {
   },
   mounted() {
     this.getRolesList();
-    this.fetchData();
+    // this.fetchData();
   },
   methods: {
+    // 监听pagesize改变的事件
+    handleSizeChange(newSize) {
+      console.log(newSize)
+      this.queryInfo.pageSize = newSize
+      this.getRolesList()
+    },
+    //  监听 页码值 改变的事件
+    handleCurrentChange(newPage) {
+      console.log(newPage)
+      this.queryInfo.pageNo = newPage
+      this.getRolesList()
+    },
+    //调接口展示角色信息
     getRolesList(){
-      getRoles()
+      let params = {
+        pageNo: this.queryInfo.pageNo,
+        pageSize: this.queryInfo.pageSize,
+      }
+      getRoles(params)
         // 请求成功
         .then((res) => {
-          this.rolesList = res.data.dataList
-          this.total = res.data.dataList.length
-          console.log(res.data.dataList,res.data.dataList.length);
+          this.rolesList = res.data.data.records
+          this.total = res.data.data.total
+          console.log(res.data.data.records,res.data.data.total);
         })
         // 请求失败
         .catch((err) => {
@@ -259,14 +286,14 @@ export default {
         this.getRolesList()
       })
     },
-    fetchData () {
-      this.listLoading = true
-      menuRoleList().then(response => {
-        this.listLoading = false
-        // this.routes = response.data
-        this.routes = this.buildMenus(response.data)
-      })
-    },
+    // fetchData () {
+    //   this.listLoading = true
+    //   menuRoleList().then(response => {
+    //     this.listLoading = false
+    //     // this.routes = response.data
+    //     this.routes = this.buildMenus(response.data)
+    //   })
+    // },
   }
 }
 </script>
