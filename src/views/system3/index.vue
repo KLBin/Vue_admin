@@ -1,13 +1,16 @@
 <template>
   <div class="app-container">
-    <!-- @click="handleAddRole" -->
-    <el-button type="primary" @click="addDialogVisible = true" >新增角色</el-button>
-    <el-form ref="selectForm" :model="selectForm" label-width="80px" style="">
-        <el-input v-model="selectForm.roleNum" style="width:40%;margin-left:30%;"></el-input>
-        <el-button type="primary" @click="selectDialog(selectForm.roleNum)">查询</el-button>
+    <!-- 查询与新增 -->
+    <el-form ref="selectForm" :model="selectForm" label-width="80px">
+      <el-form-item>
+        <el-button el-button type="primary" @click="addDialogVisible = true" >新增角色</el-button>
+        <el-input v-model="selectForm.roleNum" style="width:40%;margin-left:15%;"></el-input>
+        <el-button type="primary" @click="selectDialog(selectForm.roleNum)" style="margin-left:10px">查询</el-button>
+      </el-form-item>
     </el-form>
+
     <el-card>
-      <!-- 用户列表区域 -->
+      <!-- 角色列表区域 -->
       <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
         <el-table-column align="center" label="角色id">
           <template slot-scope="scope">
@@ -24,6 +27,7 @@
             {{ scope.row.description }}
           </template>
         </el-table-column>
+        <!-- 操作 -->
         <el-table-column align="center" label="操作" width="200px">
           <template slot-scope="scope">
             <!-- 修改按钮 -->
@@ -46,11 +50,12 @@
               icon="el-icon-delete"
               size="mini"
               :disabled="scope.row.id == '3b097f55e4a84d0bbeb114b69ff7c6e4'"
-              @click="handleDelete(scope)"
-            ></el-button>
+              @click="handleDelete(scope)">
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页 -->
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -63,7 +68,7 @@
     </el-card>
 
     <el-dialog title="添加角色" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
-    <!--添加角色的对话框-->
+    <!--添加角色对话框-->
       <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="90px">
         <el-form-item label="角色号" prop="roleNum">
           <el-input v-model="addForm.roleNum"></el-input>
@@ -84,57 +89,43 @@
       :visible.sync="editDialogVisible"
       width="50%"
       @close="editDialogClosed">
-    <!--编辑用户角色的对话框-->
-    <el-form :model="editForm" :rules="addFormRules" ref="editFormRef" label-width="90px">
-      <el-form-item label="角色id" prop="id" style="display: none;"> 
-        <el-input v-model="editForm.id"></el-input>
-      </el-form-item>
-      <el-form-item label="角色号" prop="roleNum">
-        <el-input v-model="editForm.roleNum"></el-input>
-      </el-form-item>
-      <el-form-item label="角色描述" prop="description">
-        <el-input v-model="editForm.description"></el-input>
-      </el-form-item>
-    </el-form>
-    <!--底部按钮区域-->
-    <span slot="footer" class="dialog-footer">
-      <el-button @click="editDialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="editRoleInfo">确 定</el-button>
-    </span>
+      <!--编辑用户角色的对话框-->
+      <el-form :model="editForm" :rules="addFormRules" ref="editFormRef" label-width="90px">
+        <el-form-item label="角色id" prop="id" style="display: none;"> 
+          <el-input v-model="editForm.id"></el-input>
+        </el-form-item>
+        <el-form-item label="角色号" prop="roleNum">
+          <el-input v-model="editForm.roleNum"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述" prop="description">
+          <el-input v-model="editForm.description"></el-input>
+        </el-form-item>
+      </el-form>
+      <!--底部按钮区域-->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editRoleInfo">确 定</el-button>
+      </span>
     </el-dialog>
+
     <!--添加权限对话框-->
-    <el-dialog title="权限" :visible.sync="powerDialogVisible" width="50%" @close="powerClosed">
-    <!--内容主体区域-->
-    <el-form ref="powerFormRef" label-width="90px">
-      <el-tree
-        :props="props"
-        :load="loadNode"
-        lazy
-        show-checkbox
-        @check-change="handleCheckChange">
-      </el-tree>
-    </el-form>
-    <!--底部按钮区域-->
-    <span slot="footer" class="dialog-footer">
-      <el-button @click="powerDialogVisible = false">取 消</el-button>
-      <el-button type="primary">确 定</el-button>
-    </span>
-  </el-dialog>
-    <!-- 权限树
-    <el-form-item label="权限">
-      <el-tree
-        ref="tree"
-        :check-strictly="checkStrictly"
-        :data="routesData"
-        :props="defaultProps"
-        show-checkbox
-        node-key="id"
-        :default-expand-all="true"
-        :default-checked-keys="roleOne"
-        @check="getCheckedKeys"
-        class="permission-tree"
-      />
-    </el-form-item> -->
+      <el-dialog title="权限" :visible.sync="powerDialogVisible" width="50%">
+        <!--权限主体区域-->
+        <el-form ref="powerFormRef" label-width="90px">
+          <el-tree
+            :props="props"
+            :load="loadNode"
+            lazy
+            show-checkbox
+            @check-change="handleCheckChange">
+          </el-tree>
+        </el-form>
+        <!--底部按钮区域-->
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="powerDialogVisible = false">取 消</el-button>
+          <el-button type="primary">确 定</el-button>
+        </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -169,24 +160,17 @@ export default {
         roleNum: '',
         description: ''
       },
-      // // 权限树的数据
-      // form: {},
-      // permissionIds: [],
-      // routes: [],
-      // checkStrictly: false,
-      // defaultProps: {
-      //   children: 'children',
-      //   label: 'name'
-      // },
+      // 权限树
       props: {
           label: 'name',
           children: 'zones',
           isLeaf: 'leaf'
       },
+      count: 1,
+      // 查找角色的表单数据
       selectForm: {
         roleNum: ''
       },
-      count: 1,
       // 添加用户表单的验证规则对象
       addFormRules: {
         roleNum: [
@@ -206,7 +190,6 @@ export default {
     }
   },
   mounted() {
-    // this.selectDialog();
     this.getRolesList();
     // this.fetchData();
   },
@@ -223,7 +206,7 @@ export default {
       this.queryInfo.pageNo = newPage
       this.getRolesList()
     },
-    //调接口展示角色信息
+    // 调接口展示角色信息
     getRolesList(){
       let params = {
         pageNo: this.queryInfo.pageNo,
@@ -234,13 +217,14 @@ export default {
         .then((res) => {
           this.rolesList = res.data.data.records
           this.total = res.data.data.total
-          console.log(res.data.data.records,res.data.data.total);
+          // console.log(res.data.data.records,res.data.data.total);
         })
         // 请求失败
         .catch((err) => {
           console.log(err)
         });
     },
+    // 角色删除方法
     handleDelete({ $index, row }) {
       this.$confirm('是否确认删除此角色?', '删除', {
         confirmButtonText: '确认',
@@ -250,6 +234,7 @@ export default {
         .then(async() => {
           await deleteRole(row.id)
           this.rolesList.splice($index, 1)
+          this.getRolesList()
           this.$message({
             type: 'success',
             message: '删除成功!'
@@ -257,29 +242,34 @@ export default {
         })
         .catch(err => { console.error(err) })
     },
-    selectDialog(a){
-      
-        selectRole(a)
-          // 请求成功
-          .then((res) => {
-            this.rolesList = Object.values(res.data).splice(2)
-            console.log(res.data.data) 
-            this.$message.success('查询角色成功')
-          })
-          // 请求失败
-          .catch((err) => {
-            console.log(err)
-          });
+    // 角色查询方法
+    selectDialog(result){
+      if (result == ""){
+        this.handleCurrentChange(1)
+        // this.getRolesList()
+        return
+      }
+      selectRole(result)
+        // 请求成功
+        .then((res) => {
+          this.rolesList = Object.values(res.data).splice(2)
+          // console.log(res.data.data) 
+          this.$message.success('查询角色成功')
+          // this.handleCurrentChange(1)
+        })
+        // 请求失败
+        .catch((err) => {
+          console.log(err)
+        });
     },
     // 监听 添加用户对话框的关闭事件
     addDialogClosed() {
-    // 表单内容重置为空
+      // 表单内容重置为空
       this.$refs.addFormRef.resetFields() // 通过ref引用调用resetFields方法
     },
-    // 点击按钮 添加新角色
+    // 添加角色方法
     confirm() {
       this.$refs.addFormRef.validate(async valid => {
-        
         if (!valid) return  
         await addRole(this.addForm)
           // 请求成功
@@ -300,13 +290,11 @@ export default {
     showEditDialog({ row }) {
       console.log(row.id)
       this.editDialogVisible = true
-
       selectRole(row.id)
         .then((res) => {
           this.editForm.id = res.data.data.id
           this.editForm.roleNum = res.data.data.roleNum
           this.editForm.description = res.data.data.description
-
         })
         .catch((err) => {
           this.$message.error('查询角色信息失败')
@@ -317,7 +305,7 @@ export default {
       // 表单内容重置为空
       this.$refs.editFormRef.resetFields() // 通过ref引用调用resetFields方法
     },
-    // 点击按钮 修改角色信息
+    // 修改角色信息
     editRoleInfo() {
       this.$refs.editFormRef.validate(async valid => {
         // console.log(valid)
@@ -339,86 +327,47 @@ export default {
         this.getRolesList()
       })
     },
-    // 监听 修改角色信息对话框的关闭事件
-    powerClosed() {
-      // 表单内容重置为空
-      this.$refs.powerFormRef.resetFields() // 通过ref引用调用resetFields方法
-    },
     //树状图
     handleCheckChange(data, checked, indeterminate) {
-        console.log(data, checked, indeterminate);
-      },
-      handleNodeClick(data) {
-        console.log(data);
-      },
-      loadNode(node, resolve) {
-        if (node.level === 0) {
-          return resolve([{ name: 'region1' }, { name: 'region2' }]);
-        }
-        if (node.level > 1) return resolve([]);
-
-        var hasChild;
-        if (node.data.name === 'region1') {
-          hasChild = true;
-        } else if (node.data.name === 'region2') {
-          hasChild = false;
-        } else {
-          hasChild = Math.random() > 0.5;
-        }
-
-        setTimeout(() => {
-          var data;
-          if (hasChild) {
-            data = [{
-              name: 'zone' + this.count++,
-              leaf: true
-            }, {
-              name: 'zone' + this.count++,
-              leaf: true
-            }];
-          } else {
-            data = [];
-          }
-
-          resolve(data);
-        }, 500);
-      },
-      powerDialog(){
-        this.powerDialogVisible = true
+      console.log(data, checked, indeterminate);
+    },
+    handleNodeClick(data) {
+      console.log(data);
+    },
+    loadNode(node, resolve) {
+      if (node.level === 0) {
+        return resolve([{ name: 'region1' }, { name: 'region2' }]);
       }
-  //   fetchData () {
-  //     this.listLoading = true
-  //     menuRoleList().then(response => {
-  //       this.listLoading = false
-  //       // this.routes = response.data
-  //       this.routes = this.buildMenus(response.data)
-  //     })
-  //   },
-  //   /**
-  //  * 构建目录层级结构
-  //  */
-  //  buildMenus (menus) {
-  //     const disabled = false
-  //     console.log(menus);
-  //     // filter() 方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素。
-  //     const ms = menus.filter(m => m.parentId == -1)
-  //     this.filterChildMenu(menus, ms, disabled)
-  //     return ms
-  //   },
-  //   filterChildMenu (menus, ms, disabled) {
-  //     if (ms) {
-  //       ms.forEach(e => {
-  //         const childs = menus.filter(m => m.parentId == e.id && m.parentId != m.id && m.parentId != -1) // 不是第一级也不是自身
-  //         e.children = childs
-  //         this.filterChildMenu(menus, childs, disabled)
-  //       })
-  //     }
-  //   },
-  //   getCheckedKeys () {
-  //     // console.log(this.$refs.tree.getCheckedKeys())
-  //     this.permissionIds = this.$refs.tree.getCheckedKeys()
-  //   },
-  
+      if (node.level > 1) return resolve([]);
+
+      var hasChild;
+      if (node.data.name === 'region1') {
+        hasChild = true;
+      } else if (node.data.name === 'region2') {
+        hasChild = false;
+      } else {
+        hasChild = Math.random() > 0.5;
+      }
+
+      setTimeout(() => {
+        var data;
+        if (hasChild) {
+          data = [{
+            name: 'zone' + this.count++,
+            leaf: true
+          }, {
+            name: 'zone' + this.count++,
+            leaf: true
+          }];
+        } else {
+          data = [];
+        }
+        resolve(data);
+      }, 500);
+    },
+    powerDialog(){
+      this.powerDialogVisible = true
+    }
   }
 }
 </script>
