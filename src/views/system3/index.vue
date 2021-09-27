@@ -112,19 +112,23 @@
     <el-dialog title="分配权限" :visible.sync="setRightDialogVisible" width="50%" @close="powerClosed">
       <!--内容主体区域-->
       <el-form ref="powerFormRef" label-width="90px">
+        <!-- default-checked-keys 默认勾选的节点的 key 的数组 -->
         <el-tree
+          :data="rightsList"
           :props="props"
+          node-key="id"
           :load="loadNode"
           lazy
           show-checkbox
           @check-change="handleCheckChange"
-          :default-checked-keys="defKeys">
+          :default-checked-keys="defKeys"
+          ref="treeRef">
         </el-tree>
       </el-form>
       <!--底部按钮区域-->
       <span slot="footer" class="dialog-footer">
         <el-button @click="setRightDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="setRightDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="allotRigths">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -167,9 +171,10 @@ export default {
       },
       // 权限树
       props: {
-          label: 'name',
-          children: 'children',
-          isLeaf: 'leaf'
+        id:'id',
+        label: 'name',
+        children: 'children',
+        isLeaf: 'leaf'
       },
       count: 1,
       // 查找角色的表单数据
@@ -347,13 +352,24 @@ export default {
       await getRolesMenu()
         // 请求成功
         .then((res) => {
-          this.rightsList = res.data.dataList[0].name
-          console.log(this.rightsList);
+          this.rightsList = res.data.dataList
+          console.log(res.data.dataList);
         })
         // 请求失败
         .catch((err) => {
           console.log(err)
         });
+    },
+    handleCheckChange(){
+      // getCheckedNodes()
+    },
+    // 点击按钮 给角色分配权限
+    async allotRigths(id) {
+      const keys = [
+        ...this.$refs.treeRef.getCheckedKeys(),
+        ...this.$refs.treeRef.getHalfCheckedKeys()
+      ]
+      console.log(keys)
     }
   }
 }
