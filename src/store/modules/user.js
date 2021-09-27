@@ -5,7 +5,8 @@ const getDefaultState = () => {
   return {
     token: getToken(),
     name: '',
-    avatar: ''
+    avatar: '',
+    role: ''
   }
 }
 
@@ -23,6 +24,9 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SET_ROLE: (state, role) => {
+    state.role = role
   }
 }
 
@@ -49,10 +53,12 @@ const actions = {
   getInfo({ commit }) {
     const data = {
       name: "admin",
-      avatar: "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif"
+      avatar: "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
+      role: "admin"
     };
     commit("SET_NAME", data.name);
     commit("SET_AVATAR", data.avatar);
+    commit("SET_ROLE", data.role);
   },
 
   logout() {

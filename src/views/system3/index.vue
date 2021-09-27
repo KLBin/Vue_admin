@@ -196,13 +196,13 @@ export default {
   methods: {
     // 监听pagesize改变的事件
     handleSizeChange(newSize) {
-      console.log(newSize)
+      // console.log(newSize)
       this.queryInfo.pageSize = newSize
       this.getRolesList()
     },
     //  监听 页码值 改变的事件
     handleCurrentChange(newPage) {
-      console.log(newPage)
+      // console.log(newPage)
       this.queryInfo.pageNo = newPage
       this.getRolesList()
     },
@@ -243,18 +243,23 @@ export default {
         .catch(err => { console.error(err) })
     },
     // 角色查询方法
-    selectDialog(result){
+     selectDialog(result){
       if (result == ""){
         this.handleCurrentChange(1)
         // this.getRolesList()
         return
       }
-      selectRole(result)
+       selectRole(result)
         // 请求成功
         .then((res) => {
+          if (res.data.ret == 404){
+            this.$message.error("查询结果为空")
+            return
+          }
           this.rolesList = Object.values(res.data).splice(2)
-          // console.log(res.data.data) 
+          console.log(res.data) 
           this.$message.success('查询角色成功')
+          this.total = 1
           // this.handleCurrentChange(1)
         })
         // 请求失败
@@ -308,19 +313,16 @@ export default {
     // 修改角色信息
     editRoleInfo() {
       this.$refs.editFormRef.validate(async valid => {
-        // console.log(valid)
-        let b = await updateRole(this.editForm)
-        console.log(b)
         if (!valid) return
         await updateRole(this.editForm)
         .then((res) => {
-            console.log(this.addForm)
-            this.$message.success('修改角色信息成功！')
-          })
+          console.log(this.addForm)
+          this.$message.success('修改角色信息成功！')
+        })
           // 请求失败
-          .catch((err) => {
-            console.log(err)
-          });
+        .catch((err) => {
+          console.log(err)
+        });
         // 关闭对话框
         this.editDialogVisible = false
         // 重新发起请求角色列表
