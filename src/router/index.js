@@ -4,6 +4,7 @@ import Layout from '@/layout'
 
 Vue.use(Router)
 
+// 通用页面, 这里的配置不需要权限
 export const constantRoutes = [
   {
     path: '/login',

@@ -39,10 +39,10 @@
             ></el-button>
             <!-- 权限按钮 -->
             <el-button
-              type="dangere"
-              icon="el-icon-plus"
+              type="warning"
+              icon="el-icon-setting"
               size="mini"
-              @click="powerDialog"
+              @click="showSetRightDialog(scope.row.id)"
             ></el-button>
             <!-- 删除按钮 -->
             <el-button
@@ -109,28 +109,29 @@
     </el-dialog>
 
     <!--添加权限对话框-->
-      <el-dialog title="权限" :visible.sync="powerDialogVisible" width="50%">
-        <!--权限主体区域-->
-        <el-form ref="powerFormRef" label-width="90px">
-          <el-tree
-            :props="props"
-            :load="loadNode"
-            lazy
-            show-checkbox
-            @check-change="handleCheckChange">
-          </el-tree>
-        </el-form>
-        <!--底部按钮区域-->
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="powerDialogVisible = false">取 消</el-button>
-          <el-button type="primary">确 定</el-button>
-        </span>
+    <el-dialog title="分配权限" :visible.sync="setRightDialogVisible" width="50%" @close="powerClosed">
+      <!--内容主体区域-->
+      <el-form ref="powerFormRef" label-width="90px">
+        <el-tree
+          :props="props"
+          :load="loadNode"
+          lazy
+          show-checkbox
+          @check-change="handleCheckChange"
+          :default-checked-keys="defKeys">
+        </el-tree>
+      </el-form>
+      <!--底部按钮区域-->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRightDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setRightDialogVisible = false">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRoles, deleteRole, addRole, selectRole, updateRole} from "@/api/role";
+import { getRoles, deleteRole, addRole, selectRole, updateRole, getRolesMenu } from "@/api/role";
 
 export default {
   data() {
@@ -149,6 +150,10 @@ export default {
       addDialogVisible: false, // 控制添加角色对话框是否显示
       editDialogVisible: false, // 控制修改角色信息对话框是否显示
       powerDialogVisible: false, // 控制权限对话框是否显示
+      setRightDialogVisible: false, // 控制分配角色权限对话框是否显示
+      rightsList: [], // 角色所有权限数据
+      defKeys: [], // 默认选中的节点ID值数组
+      
       // 添加角色的表单数据
       addForm: {
         roleNum: '',
@@ -163,7 +168,7 @@ export default {
       // 权限树
       props: {
           label: 'name',
-          children: 'zones',
+          children: 'children',
           isLeaf: 'leaf'
       },
       count: 1,
@@ -329,46 +334,26 @@ export default {
         this.getRolesList()
       })
     },
-    //树状图
-    handleCheckChange(data, checked, indeterminate) {
-      console.log(data, checked, indeterminate);
+    // 监听 修改角色信息对话框的关闭事件
+    powerClosed() {
+      // 表单内容重置为空
+      this.$refs.powerFormRef.resetFields() // 通过ref引用调用resetFields方法
     },
-    handleNodeClick(data) {
-      console.log(data);
-    },
-    loadNode(node, resolve) {
-      if (node.level === 0) {
-        return resolve([{ name: 'region1' }, { name: 'region2' }]);
-      }
-      if (node.level > 1) return resolve([]);
 
-      var hasChild;
-      if (node.data.name === 'region1') {
-        hasChild = true;
-      } else if (node.data.name === 'region2') {
-        hasChild = false;
-      } else {
-        hasChild = Math.random() > 0.5;
-      }
-
-      setTimeout(() => {
-        var data;
-        if (hasChild) {
-          data = [{
-            name: 'zone' + this.count++,
-            leaf: true
-          }, {
-            name: 'zone' + this.count++,
-            leaf: true
-          }];
-        } else {
-          data = [];
-        }
-        resolve(data);
-      }, 500);
-    },
-    powerDialog(){
-      this.powerDialogVisible = true
+     // 展示分配权限的对话框
+    async showSetRightDialog(id) {
+      this.setRightDialogVisible = true
+      // 获取所有权限列表 树形
+      await getRolesMenu()
+        // 请求成功
+        .then((res) => {
+          this.rightsList = res.data.dataList[0].name
+          console.log(this.rightsList);
+        })
+        // 请求失败
+        .catch((err) => {
+          console.log(err)
+        });
     }
   }
 }

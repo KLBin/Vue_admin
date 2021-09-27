@@ -33,13 +33,14 @@ router.beforeEach(async(to, from, next) => {
 
   if (hasToken) {
     if (to.path === '/login') {
-      // if is logged in, redirect to the home page
+      // 已登录重定向到首页
       next({ path: '/' })
       NProgress.done()
     } else {
       const hasGetUserInfo = store.getters.name
       if (hasGetUserInfo) {
-        next()
+        //角色存在
+        next() //继续即可
       } else {
         try {
           // get user info
@@ -56,13 +57,13 @@ router.beforeEach(async(to, from, next) => {
       }
     }
   } else {
-    /* has no token*/
+    // 用户无令牌
 
     if (whiteList.indexOf(to.path) !== -1) {
-      // in the free login whitelist, go directly
+      //白名单路由放过
       next()
     } else {
-      // other pages that do not have permission to access are redirected to the login page.
+      // 重定向至登录页
       next(`/login?redirect=${to.path}`)
       NProgress.done()
     }
