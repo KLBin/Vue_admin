@@ -360,7 +360,7 @@ export default {
         });
     },
     handleCheckChange(){
-      // getCheckedNodes()
+      getCheckedNodes()
     },
     // 点击按钮 给角色分配权限
     async allotRigths(id) {
