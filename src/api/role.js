@@ -41,7 +41,7 @@ export function updateRole(data) {
 
 export function getRolesMenu() {
   return request({
-    url: '/api/v1/console/menu/',
+    url: '/api/v1/user/menu/getChildByMenuId',
     method: 'get',
   })
 }

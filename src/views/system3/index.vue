@@ -117,11 +117,10 @@
           :data="rightsList"
           :props="props"
           node-key="id"
-          :load="loadNode"
-          lazy
           show-checkbox
           @check-change="handleCheckChange"
           :default-checked-keys="defKeys"
+          default-expand-all
           ref="treeRef">
         </el-tree>
       </el-form>
@@ -173,10 +172,9 @@ export default {
       props: {
         id:'id',
         label: 'name',
-        children: 'children',
-        isLeaf: 'leaf'
+        children: 'child',
+        // isLeaf: 'leaf'
       },
-      count: 1,
       // 查找角色的表单数据
       selectForm: {
         roleNum: ''
@@ -352,6 +350,7 @@ export default {
       await getRolesMenu()
         // 请求成功
         .then((res) => {
+          
           this.rightsList = res.data.dataList
           console.log(res.data.dataList);
         })
@@ -370,6 +369,8 @@ export default {
         ...this.$refs.treeRef.getHalfCheckedKeys()
       ]
       console.log(keys)
+      // 关闭对话框
+      this.setRightDialogVisible = false
     }
   }
 }
